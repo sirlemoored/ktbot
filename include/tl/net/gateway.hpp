@@ -18,15 +18,15 @@ namespace net
             std::chrono::milliseconds       m_HeartbeatInterval;
 
             BasicGateway::buffers_t         m_StatusBuffer;
-            std::shared_ptr<BasicGateway>   m_BasicGateway;
+            std::shared_ptr<BasicGateway>   m_NextLayer;
 
         private:
 
-            void asyncReadHello(beast::error_code ec);
-            void asyncProcessHello(beast::error_code ec, size_t bytesRead);
+            void asyncReadHello(net::error_t ec);
+            void asyncProcessHello(net::error_t ec, size_t bytesRead);
             void asyncSendIdentify();
-            void asyncReadIdentify(beast::error_code ec, size_t bytesWritten);
-            void asyncProcessIdentify(beast::error_code ec, size_t bytesRead);  
+            void asyncReadIdentify(net::error_t ec, size_t bytesWritten);
+            void asyncProcessIdentify(net::error_t ec, size_t bytesRead);  
 
         public:
 
@@ -34,13 +34,13 @@ namespace net
 
         public:
 
-            beast::error_code Connect();
-            beast::error_code Identify();
-            beast::error_code Hello();
+            net::error_t      Connect();
+            net::error_t      Identify();
+            net::error_t      Hello();
             void              BeginHeartbeat();
             void              BeginRead();
 
-            BasicGateway& NextLayer() { return *m_BasicGateway; }
+            BasicGateway& NextLayer() { return *m_NextLayer; }
 
     };
 

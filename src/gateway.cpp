@@ -7,19 +7,19 @@ namespace tl::kt
         m_IoContext{ioContext},
         m_BotToken{token},
         m_HeartbeatInterval{0},
-        m_BasicGateway{std::make_shared<BasicGateway>(ioContext)}
+        m_NextLayer{std::make_shared<BasicGateway>(ioContext)}
     {
 
     }
 
 
-    void net::Gateway::asyncReadHello(beast::error_code ec)
+    void net::Gateway::asyncReadHello(net::error_t ec)
     {
         if (!NextLayer().Status(ec))
-            m_BasicGateway->Read(m_StatusBuffer, beast::bind_front_handler(&Gateway::asyncProcessHello, shared_from_this()));
+            m_NextLayer->Read(m_StatusBuffer, beast::bind_front_handler(&Gateway::asyncProcessHello, shared_from_this()));
     }
 
-    void net::Gateway::asyncProcessHello(beast::error_code ec, size_t bytesRead)
+    void net::Gateway::asyncProcessHello(net::error_t ec, size_t bytesRead)
     {
         if (!NextLayer().Status(ec))
         {
@@ -55,16 +55,16 @@ namespace tl::kt
             )"_json;
             identifyPayload["d"]["token"] = m_BotToken;
             std::string dmp = identifyPayload.dump();
-            m_BasicGateway->Write(asio::buffer(dmp), beast::bind_front_handler(&Gateway::asyncReadIdentify, shared_from_this()));
+            m_NextLayer->Write(asio::buffer(dmp), beast::bind_front_handler(&Gateway::asyncReadIdentify, shared_from_this()));
     }
 
-    void net::Gateway::asyncReadIdentify(beast::error_code ec, size_t bytesWritten)
+    void net::Gateway::asyncReadIdentify(net::error_t ec, size_t bytesWritten)
     {
         if (!NextLayer().Status(ec))
-            m_BasicGateway->Read(m_StatusBuffer, beast::bind_front_handler(&Gateway::asyncProcessIdentify, shared_from_this()));
+            m_NextLayer->Read(m_StatusBuffer, beast::bind_front_handler(&Gateway::asyncProcessIdentify, shared_from_this()));
     }
 
-    void net::Gateway::asyncProcessIdentify(beast::error_code ec, size_t bytesRead)
+    void net::Gateway::asyncProcessIdentify(net::error_t ec, size_t bytesRead)
     {
         if (!NextLayer().Status(ec))
         {
@@ -73,20 +73,20 @@ namespace tl::kt
         }
     }
 
-    beast::error_code net::Gateway::Connect()
+    net::error_t net::Gateway::Connect()
     {
-        m_BasicGateway->Connect();
-        m_BasicGateway->Run();
-        return NextLayer().Status();
+        m_NextLayer->Connect();
+        m_NextLayer->Run();
+        return m_NextLayer->Status();
     }
 
-    beast::error_code net::Gateway::Identify()
+    net::error_t net::Gateway::Identify()
     {
-        m_BasicGateway->Read(m_StatusBuffer, beast::bind_front_handler(&Gateway::asyncProcessHello, shared_from_this()));
-        m_BasicGateway->Run();
+        m_NextLayer->Read(m_StatusBuffer, beast::bind_front_handler(&Gateway::asyncProcessHello, shared_from_this()));
+        m_NextLayer->Run();
         
         std::cout << beast::buffers_to_string(m_StatusBuffer.data()) << "\n";
-        return NextLayer().Status();
+        return m_NextLayer->Status();
     }
 
 }

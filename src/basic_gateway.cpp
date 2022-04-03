@@ -12,23 +12,23 @@ namespace tl::kt
 
     }
 
-    void net::BasicGateway::asyncConnect(beast::error_code ec, asio::ip::tcp::resolver::results_type results)
+    void net::BasicGateway::asyncConnect(net::error_t ec, asio::ip::tcp::resolver::results_type results)
     {
         if (!(m_Status = ec))
             beast::get_lowest_layer(m_Stream).async_connect(results, beast::bind_front_handler(&BasicGateway::asyncHandshakeSSL, shared_from_this()));
     }
 
-    void net::BasicGateway::asyncHandshakeSSL(beast::error_code ec, asio::ip::tcp::resolver::results_type::endpoint_type endpoint)
+    void net::BasicGateway::asyncHandshakeSSL(net::error_t ec, asio::ip::tcp::resolver::results_type::endpoint_type endpoint)
     {
         
         if (!(m_Status = ec))
             m_Stream.next_layer().async_handshake(ssl::stream_base::client, beast::bind_front_handler(&BasicGateway::asyncHandshakeWS, shared_from_this()));
     }
 
-    void net::BasicGateway::asyncHandshakeWS(beast::error_code ec)
+    void net::BasicGateway::asyncHandshakeWS(net::error_t ec)
     {
         if (!(m_Status = ec))
-            m_Stream.async_handshake("gateway.discord.gg", "/?v=9&encoding=json", [self = shared_from_this()](beast::error_code ec){
+            m_Stream.async_handshake("gateway.discord.gg", "/?v=9&encoding=json", [self = shared_from_this()](net::error_t ec){
                 self->m_Status = ec;
             });
             // m_Stream.async_handshake("gateway.discord.gg", "/?v=9&encoding=json", beast::bind_front_handler(&BasicGateway::async_read_hello, shared_from_this()));
@@ -58,12 +58,12 @@ namespace tl::kt
         return m_IoContext;
     }
 
-    beast::error_code net::BasicGateway::Status() const
+    net::error_t net::BasicGateway::Status() const
     {
         return m_Status;
     }
 
-    beast::error_code net::BasicGateway::Status(beast::error_code ec)
+    net::error_t net::BasicGateway::Status(net::error_t ec)
     {
         m_Status = ec;
         return m_Status;

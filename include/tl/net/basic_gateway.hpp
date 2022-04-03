@@ -35,13 +35,13 @@ namespace net
             asio::io_context&           m_IoContext;
             ssl::context                m_SSLContext;
             net::stream                 m_Stream;
-            beast::error_code           m_Status;
+            net::error_t                m_Status;
 
 
         private:
-            void asyncConnect(beast::error_code ec, asio::ip::tcp::resolver::results_type results);
-            void asyncHandshakeSSL(beast::error_code ec, asio::ip::tcp::resolver::results_type::endpoint_type endpoint);
-            void asyncHandshakeWS(beast::error_code ec);
+            void asyncConnect(net::error_t ec, asio::ip::tcp::resolver::results_type results);
+            void asyncHandshakeSSL(net::error_t ec, asio::ip::tcp::resolver::results_type::endpoint_type endpoint);
+            void asyncHandshakeWS(net::error_t ec);
 
         public:
 
@@ -63,8 +63,8 @@ namespace net
 
             void Run() const;
             asio::io_context& Context() const;
-            beast::error_code Status() const;
-            beast::error_code Status(beast::error_code ec);
+            net::error_t Status() const;
+            net::error_t Status(net::error_t ec);
 
     };
 
