@@ -5,7 +5,7 @@
 
 #include <tl/net/gateway.hpp>
 
-const std::string TOKEN = "NzI3NDcwNTQ4ODIwNDI2Nzc3.XvsTvg.m1kD8nH5zcoVLNiIChsK3cxvgfw";
+const std::string TOKEN = "";
 
 int main(int argc, char** argv)
 {
