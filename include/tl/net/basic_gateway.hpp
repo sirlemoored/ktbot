@@ -1,21 +1,16 @@
-#ifndef BASIC_GATEWAY_HPP
-#define BASIC_GATEWAY_HPP
+#ifndef NET_BASIC_GATEWAY_HPP
+#define NET_BASIC_GATEWAY_HPP
 
-#include <tl/types.hpp>
+#include <tl/net/common.hpp>
 
 #include <chrono>
 #include <iostream>
 #include <memory>
 #include <utility>
 
-namespace asio = boost::asio;
-namespace ssl  = boost::asio::ssl;
-namespace beast = boost::beast;
+namespace tl::kt::net
+{
 
-namespace tl::kt
-{
-namespace net
-{
 
     // A low-level intermediate between Discord gateway and the Bot.
     // Contains connection-oriented methods (I/O, handshake etc.).
@@ -34,7 +29,7 @@ namespace net
             
             asio::io_context&           m_IoContext;
             ssl::context                m_SSLContext;
-            net::stream                 m_Stream;
+            net::stream_t                 m_Stream;
             net::error_t                m_Status;
 
 
@@ -82,7 +77,6 @@ namespace net
     }
 
 
-} // namespace net
-} // namespace tl::kt
+} // namespace tl::kt::net
 
 #endif

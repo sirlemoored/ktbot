@@ -1,8 +1,9 @@
-#ifndef GATEWAY_HPP
-#define GATEWAY_HPP
+#ifndef NET_GATEWAY_HPP
+#define NET_GATEWAY_HPP
 
-#include <tl/types.hpp>
 #include <tl/net/basic_gateway.hpp>
+#include <tl/net/common.hpp>
+#include <tl/discord/common.hpp>
 
 namespace tl::kt
 {
@@ -39,8 +40,7 @@ namespace net
             net::error_t      Hello();
             void              BeginHeartbeat();
             void              BeginRead();
-
-            BasicGateway& NextLayer() { return *m_NextLayer; }
+            BasicGateway&     NextLayer() { return *m_NextLayer; }
 
     };
 

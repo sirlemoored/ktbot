@@ -15,19 +15,19 @@ namespace tl::kt
 
     void net::Gateway::asyncReadHello(net::error_t ec)
     {
-        if (!NextLayer().Status(ec))
+        if (!m_NextLayer->Status(ec))
             m_NextLayer->Read(m_StatusBuffer, beast::bind_front_handler(&Gateway::asyncProcessHello, shared_from_this()));
     }
 
     void net::Gateway::asyncProcessHello(net::error_t ec, size_t bytesRead)
     {
-        if (!NextLayer().Status(ec))
+        if (!m_NextLayer->Status(ec))
         {
             std::string response = beast::buffers_to_string(m_StatusBuffer.data());
             m_StatusBuffer.consume(bytesRead);
             json helloJson = json::parse(response);
             int opCode = helloJson["op"].get<int>();
-            if (opCode == discord::opcode::hello)
+            if (opCode == kt::discord::opcode::hello)
             {
                 int interval = helloJson["d"]["heartbeat_interval"].get<int>();
                 m_HeartbeatInterval = asio::chrono::milliseconds{interval};
@@ -60,13 +60,13 @@ namespace tl::kt
 
     void net::Gateway::asyncReadIdentify(net::error_t ec, size_t bytesWritten)
     {
-        if (!NextLayer().Status(ec))
+        if (!m_NextLayer->Status(ec))
             m_NextLayer->Read(m_StatusBuffer, beast::bind_front_handler(&Gateway::asyncProcessIdentify, shared_from_this()));
     }
 
     void net::Gateway::asyncProcessIdentify(net::error_t ec, size_t bytesRead)
     {
-        if (!NextLayer().Status(ec))
+        if (!m_NextLayer->Status(ec))
         {
             std::string response = beast::buffers_to_string(m_StatusBuffer.data());
             m_StatusBuffer.consume(bytesRead);
